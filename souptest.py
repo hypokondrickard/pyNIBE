@@ -13,22 +13,23 @@ result = dict()
 
 table_id = 0
 for table in all_tables:
+    # get keys
+    var_designations = [x.text for x in table.findAll('span', attrs={'class': 'VariableDesignation'})]
 
-    var_designation_elems = table.findAll('span', attrs={'class': 'VariableDesignation'})
-    var_value_elems = table.findAll(attrs={'class': re.compile(r".*(AutoUpdateValue|ID0).*")})
+    # get values
+    var_values = [x.text for x in table.findAll(attrs={'class': re.compile(r".*(AutoUpdateValue|ID0).*")})]
 
-    var_designations = [x.text for x in var_designation_elems]
-    var_values = [x.text for x in var_value_elems]
-
-    var_decorators = []
+    # get descriptors
+    var_descriptors = []
     table_body = table.find('tbody')
     for row in table_body.findAll('tr'):
-        cols = row.findAll('td', limit=1)
-        cols = [ele.contents[0].strip() for ele in cols]
-        var_decorators.append(cols[0])
+        cols = [ele.contents[0].strip() for ele in row.findAll('td', limit=1)]
+        var_descriptors.append(cols[0])
 
-    this_table = zip(var_designations, var_values, var_decorators)
+    # collapse result lists for this table
+    this_table = zip(var_designations, var_values, var_descriptors)
 
+    # populate result dict for this table
     table_name = all_table_names[table_id].text
     table_result = dict()
     for entry in this_table:
@@ -38,4 +39,4 @@ for table in all_tables:
 
     table_id += 1
 
-pprint(result['status']['BT1']['value'])
+pprint(result)
