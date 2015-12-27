@@ -66,7 +66,7 @@ class pyNIBE(object):
             table_name = all_table_names[table_id].text
             table_result = dict()
             for entry in this_table:
-                table_result[entry[0]] = {'value': entry[1], 'decorator': entry[2]}
+                table_result[entry[0]] = {'value': entry[1], 'descriptor': entry[2]}
 
             result[table_name] = table_result
 
