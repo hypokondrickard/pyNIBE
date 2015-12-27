@@ -1,3 +1,5 @@
+import requests
+
 class pyNIBE(object):
 
     def __init__(self, username, password):
@@ -22,16 +24,16 @@ class pyNIBE(object):
             'Connection': 'keep-alive',
         }
 
-        data = 'returnUrl=&Email=%s&Password=%s' % (username,password)
+        data = 'returnUrl=&Email=%s&Password=%s' % (self.username,self.password)
 
-        session = requests.Session()
+        self.session = requests.Session()
 
-        session.post('https://www.nibeuplink.com/LogIn', headers=headers, data=data)
-
-        self.session = session
+        self.session.post('https://www.nibeuplink.com/LogIn', headers=headers, data=data)
 
     def _get(self):
-        self.readings = requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=self.session.cookies.get_dict())
+        r = requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=self.session.cookies.get_dict())
+        self.readings = r.content
 
     def open(self):
-        self.session = _login()
+        self._login()
+        self._get()
