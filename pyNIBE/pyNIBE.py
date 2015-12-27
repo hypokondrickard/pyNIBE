@@ -1,4 +1,4 @@
-class pyNIBE:
+class pyNIBE(object):
 
     def __init__(self, username, password):
         """
@@ -6,6 +6,7 @@ class pyNIBE:
         """
         self.username = username
         self.password = password
+        self.session = None
 
     def _login(self):
         headers = {
@@ -23,16 +24,14 @@ class pyNIBE:
 
         data = 'returnUrl=&Email=%s&Password=%s' % (username,password)
 
-
         session = requests.Session()
 
         session.post('https://www.nibeuplink.com/LogIn', headers=headers, data=data)
 
-        return session.cookies.get_dict()
+        self.session = session
 
     def _get(self):
-        return requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=self.session)
+        self.readings = requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=self.session.cookies.get_dict())
 
     def open(self):
         self.session = _login()
-        return _get()
