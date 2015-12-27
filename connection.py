@@ -2,17 +2,7 @@ import requests
 from BeautifulSoup import BeautifulSoup
 import sys
 
-def getCookie(username,password):
-	cookies = {
-	    'BIGipServerUplink_www_pool': '1695000768.20480.0000',
-	    'EmilLanguage': 'en-US',
-	    '__utmt': '1',
-	    '__utma': '18108838.998944294.1444745470.1444745470.1444745470.1',
-	    '__utmb': '18108838.51.10.1444745470',
-	    '__utmc': '18108838',
-	    '__utmz': '18108838.1444745470.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)',
-	}
-
+def log_in(username,password):
 	headers = {
 	    'Origin': 'https://www.nibeuplink.com',
 	    'Accept-Encoding': 'gzip, deflate',
@@ -31,13 +21,12 @@ def getCookie(username,password):
 
 	session = requests.Session()
 
-	session.post('https://www.nibeuplink.com/LogIn', headers=headers, cookies=cookies, data=data)
+	session.post('https://www.nibeuplink.com/LogIn', headers=headers, data=data)
 
 	return session.cookies.get_dict()
 
 username = sys.argv[1]
 password = sys.argv[2]
 
-#r = requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=getCookie(username, password))
-r = requests.get('https://www.nibeuplink.com/', cookies=getCookie(username, password))
+r = requests.get('https://www.nibeuplink.com/System/21264/Status/ServiceInfo', cookies=log_in(username, password))
 print r.content
