@@ -60,9 +60,15 @@ class pyNIBE(object):
 
             # populate result dict for this table
             table_name = all_table_names.pop(0).text
+
             table_result = dict()
+
+            num_sensors = len(this_table)
+
+            i = 0
             for entry in this_table:
-                table_result[entry[0]] = {'value': entry[1], 'descriptor': entry[2]}
+                table_result[i] = {'sensor-code': entry[0], 'value': entry[1], 'descriptor': entry[2]}
+                i += 1
 
             result[table_name] = table_result
 
