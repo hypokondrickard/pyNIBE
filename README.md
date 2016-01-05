@@ -31,19 +31,20 @@ Examples
 
 Connect to the NIBE uplink service:
 ```python
->>> from pyNIBE import pyNIBE
->>> my_heater = pyNIBE('<nibe uplink username>','<nibe uplink password>','<system ID>')
->>> my_heater.open()
->>> outdoor_temperature = my_heater.readings['status'][0]['value']
->>> my_heater.close()
+from pyNIBE import pyNIBE
+my_heater = pyNIBE('<nibe uplink username>','<nibe uplink password>','<system ID>')
+my_heater.open()
+outdoor_temperature = my_heater.readings['status'][0]['value']
+my_heater.close()
 ```
 
 ### Refresh measurement data
 ```python
->>> while True:
->>>    my_heater.refresh()
->>>    print my_heater.readings
->>>    time.sleep(5)
+while True:
+	# update our readings
+	my_heater.refresh()
+	print my_heater.readings
+	time.sleep(5)
 ```
 
 ### Ship data to influxDB
@@ -59,6 +60,9 @@ my_heater = pyNIBE('<nibe uplink username>','<nibe uplink password>','<system ID
 my_heater.open()
 
 while True:
+	# update our readings
+	my_heater.refresh()
+
 	# first value of the 'status'-section holds "BT1 Outdoor temperature"
 	outdoor_temperature = my_heater.readings['status'][0]['value']
 
@@ -73,7 +77,8 @@ while True:
 	# sending our data to influxDB
 	client.write_points([my_datapoint])
 
-	# wait for a while and start over
+	# log out, wait for a while and start over
+	my_heater.close()
 	time.sleep(300)
 ```
 
