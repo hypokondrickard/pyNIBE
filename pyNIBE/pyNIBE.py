@@ -63,8 +63,7 @@ class pyNIBE(object):
 
             table_result = dict()
 
-            num_sensors = len(this_table)
-
+            # using an iterator as key for our sensor readouts - the sensor-code is not a viable key as there are duplicates
             i = 0
             for entry in this_table:
                 table_result[i] = {'sensor-code': entry[0], 'value': entry[1], 'descriptor': entry[2]}
