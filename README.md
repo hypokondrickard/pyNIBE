@@ -3,8 +3,8 @@ pyNIBE
 
 python module for retreival of measurement data from the NIBE UPLINK service
 
-Install
-=======
+Installation
+============
 
 To install, clone this repo and execute:
 
@@ -34,7 +34,7 @@ Connect to the NIBE uplink service:
 >>> from pyNIBE import pyNIBE
 >>> my_heater = pyNIBE('<nibe uplink username>','<nibe uplink password>','<system ID>')
 >>> my_heater.open()
->>> outdoor_temperature = min_panna.readings['status'][0]['value']
+>>> outdoor_temperature = my_heater.readings['status'][0]['value']
 >>> my_heater.close()
 ```
 
@@ -60,13 +60,13 @@ my_heater.open()
 
 while True:
 	# first value of the 'status'-section holds "BT1 Outdoor temperature"
-	outdoor_temperature = min_panna.readings['status'][0]['value']
+	outdoor_temperature = my_heater.readings['status'][0]['value']
 
 	# an awful way of killing the centigrade unit and converting to float
 	outdoor_temperature = float(outdoor_temperature[0:-2])
 
 	# bagging and tagging our data
-	my_datapoint["measurement"] = "varmepannan"
+	my_datapoint["measurement"] = "NIBE-1245-8"
 	my_datapoint["tags"] = {'sensor': 'outdoor'}
 	my_datapoint["fields"] = {'value': outdoor_temperature}
 
