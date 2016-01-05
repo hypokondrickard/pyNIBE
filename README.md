@@ -17,8 +17,13 @@ python setup.py install
 
 Documentation
 =============
-Please note that this is a web scraping library. User experience may vary. 
-Also, all values retrieved from NIBE UPLINK are preserved in the way they were retrieved, namely as unicode strings. This means that for whatever application you have, you will need to convert the readouts into more suiting forms.
+Please note that this is a web scraping library. User experience may vary.
+
+this module will present the user with a dict of dicts holding all values presented in the Service Info-view of the NIBE Uplink webUI. 
+
+[sample output](tests/mock-data/sample-output.txt)
+
+Also, all values retrieved from NIBE UPLINK are preserved in the way they were retrieved, namely as unicode strings. This means that for whatever application you have, you will need to convert the readouts into a more suiting forms.
 
 Before we proceed, we need to find the system ID of the heater we're interested in. The easiest way to get this is to log in to the nibe uplink webservice and click the system you're interested in. At this point, looking at the adress field of your web browser, you should see something like: https://www.nibeuplink.com/System/12345/Status/Overview, where 12345 is your system ID.
 
@@ -34,8 +39,6 @@ Connect to the NIBE uplink service:
 ```
 
 ### Refresh measurement data
-Load a candidate configuration from a file and show the diff that is going to 
-be applied when committing the config:
 ```python
 >>> while True:
 >>>    my_heater.refresh()
@@ -44,7 +47,7 @@ be applied when committing the config:
 ```
 
 ### Ship data to influxDB
-```
+```python
 from pyNIBE import pyNIBE
 from influxdb import InfluxDBClient
 import json
