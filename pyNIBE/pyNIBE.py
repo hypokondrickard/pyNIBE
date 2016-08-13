@@ -36,40 +36,63 @@ class pyNIBE(object):
 
         soup = BeautifulSoup(r.content)
 
-        all_table_names = soup.findAll('h3')
-        all_tables = soup.findAll('table', {"class": 'Sortable {sortlist: [[0,0]]}'})
+        # finding and counting "TabLinks"-elements, as those only exists if there are multiple modules in a system
+        all_tablinks = soup.findAll('div', {"class": 'TabLink'})
+        num_modules = len(all_tablinks)
+
+        # we always start with the first module, even if there's just one
+        current_module = 0
 
         result = dict()
 
-        for table in all_tables:
-            # get keys
-            var_designations = [x.text for x in table.findAll('span', attrs={'class': 'VariableDesignation'})]
+        while current_module <= num_modules:
 
-            # get values
-            var_values = [x.text for x in table.findAll(attrs={'class': re.compile(r".*(AutoUpdateValue|ID0).*")})]
+            # if we're looking at a secondary module, we want to do a fresh pull of that ServiceInfo-section
+            if current_module is not 0:
+                r = requests.get('https://www.nibeuplink.com/System/%s/Status/ServiceInfo/%s' %
+                                 (self.system_id, current_module),
+                                 cookies=self.session.cookies.get_dict())
 
-            # get descriptors
-            var_descriptors = []
-            table_body = table.find('tbody')
-            for row in table_body.findAll('tr'):
-                cols = [ele.contents[0].strip() for ele in row.findAll('td', limit=1)]
-                var_descriptors.append(cols[0])
+                soup = BeautifulSoup(r.content)
 
-            # collapse result lists for this table
-            this_table = zip(var_designations, var_values, var_descriptors)
+            all_table_names = soup.findAll('h3')
+            all_tables = soup.findAll('table', {"class": 'Sortable {sortlist: [[0,0]]}'})
 
-            # populate result dict for this table
-            table_name = all_table_names.pop(0).text
+            module_result = dict()
 
-            table_result = dict()
+            for table in all_tables:
+                # get keys
+                var_designations = [x.text for x in table.findAll('span', attrs={'class': 'VariableDesignation'})]
 
-            # using an iterator as key for our sensor readouts - the sensor-code is not a viable key as there are duplicates
-            i = 0
-            for entry in this_table:
-                table_result[i] = {'sensor-code': entry[0], 'value': entry[1], 'descriptor': entry[2]}
-                i += 1
+                # get values
+                var_values = [x.text for x in table.findAll(attrs={'class': re.compile(r".*(AutoUpdateValue|ID0).*")})]
 
-            result[table_name] = table_result
+                # get descriptors
+                var_descriptors = []
+                table_body = table.find('tbody')
+                for row in table_body.findAll('tr'):
+                    cols = [ele.contents[0].strip() for ele in row.findAll('td', limit=1)]
+                    var_descriptors.append(cols[0])
+
+                # collapse result lists for this table
+                this_table = zip(var_designations, var_values, var_descriptors)
+
+                # populate result dict for this table
+                table_name = all_table_names.pop(0).text
+
+                table_result = dict()
+
+                # using an iterator as key for our sensor readouts - the sensor-code is not a viable key as there are duplicates
+                i = 0
+                for entry in this_table:
+                    table_result[i] = {'sensor-code': entry[0], 'value': entry[1], 'descriptor': entry[2]}
+                    i += 1
+
+                module_result[table_name] = table_result
+
+            result[current_module] = module_result
+
+            current_module = current_module + 1
 
         self.readings = result
 

@@ -16,7 +16,9 @@ Documentation
 =============
 Please note that this is a web scraping library. User experience may vary.
 
-this module will present the user with a dict of dicts holding all values presented in the Service Info-view of the NIBE Uplink webUI. 
+this module will present the user with a nested dicts holding all values presented in the Service Info-view of the NIBE Uplink webUI. 
+
+If there's more than one entry in the top level dict, this is because your NIBE system has more than one module (e.g slaves).
 
 [sample output](tests/mock-data/sample-output.txt)
 
@@ -34,7 +36,7 @@ Connect to the NIBE uplink service:
 from pyNIBE import pyNIBE
 my_heater = pyNIBE('<nibe uplink username>','<nibe uplink password>','<system ID>')
 my_heater.open()
-outdoor_temperature = my_heater.readings['status'][0]['value']
+outdoor_temperature = my_heater.readings[0]['status'][0]['value']
 my_heater.close()
 ```
 
@@ -64,7 +66,7 @@ while True:
 	my_heater.refresh()
 
 	# first value of the 'status'-section holds "BT1 Outdoor temperature"
-	outdoor_temperature = my_heater.readings['status'][0]['value']
+	outdoor_temperature = my_heater.readings[0]['status'][0]['value']
 
 	# an awful way of killing the centigrade unit and converting to float
 	outdoor_temperature = float(outdoor_temperature[0:-2])
